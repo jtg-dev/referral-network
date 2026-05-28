@@ -7,224 +7,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #0f1923; height: 100vh;
+       display: flex; flex-direction: column; overflow: hidden; color: #fff; }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f0f4f8;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-#header {
-  background: #1F3864;
-  color: #fff;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-#header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+#header { background: #1F3864; padding: 10px 18px; display: flex;
+          align-items: center; justify-content: space-between; flex-shrink: 0;
+          border-bottom: 2px solid #F4B942; }
+#header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
 #header p  { font-size: 11px; color: #a8bcd4; margin-top: 2px; }
+#stats { display: flex; gap: 14px; }
+.stat-box { text-align: center; background: rgba(255,255,255,0.08);
+            border-radius: 6px; padding: 5px 12px; }
+.stat-box .num { font-size: 18px; font-weight: 700; color: #F4B942; }
+.stat-box .lbl { font-size: 9px; color: #a8bcd4; text-transform: uppercase; letter-spacing: 0.5px; }
 
-#stats { display: flex; gap: 20px; align-items: center; }
-.stat-box {
-  text-align: center;
-  background: rgba(255,255,255,0.1);
-  border-radius: 6px;
-  padding: 6px 14px;
-}
-.stat-box .num { font-size: 20px; font-weight: 700; color: #F4B942; }
-.stat-box .lbl { font-size: 10px; color: #a8bcd4; text-transform: uppercase; letter-spacing: 0.5px; }
+#controls { background: #162032; border-bottom: 1px solid #2a3f5a;
+            padding: 7px 14px; display: flex; align-items: center;
+            gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
+.ctrl-label { font-size: 10px; font-weight: 700; color: #7a9bbe;
+              text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.ctrl-grp { display: flex; align-items: center; gap: 5px; }
+.sep { width: 1px; height: 22px; background: #2a3f5a; flex-shrink: 0; }
 
-#controls {
-  background: #fff;
-  border-bottom: 1px solid #dde3ee;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.ctrl-label { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
-.ctrl-group { display: flex; align-items: center; gap: 6px; }
+.btn { border: 1.5px solid #2a3f5a; background: #162032; border-radius: 16px;
+       padding: 3px 10px; font-size: 10px; cursor: pointer; color: #ccd9e8;
+       font-family: Arial, sans-serif; transition: all 0.15s; white-space: nowrap; }
+.btn:hover { border-color: #F4B942; color: #F4B942; }
+.btn.active      { background: #1F3864; color: #fff; border-color: #4A90D9; }
+.btn.a-vip       { background: #8a6a00 !important; border-color: #F4B942 !important; color:#fff !important; }
+.btn.a-act       { background: #1F3864 !important; border-color: #4A90D9 !important; color:#fff !important; }
+.btn.a-pros      { background: #1a4a7a !important; border-color: #27ae60 !important; color:#fff !important; }
+.btn.a-inact     { background: #444    !important; border-color: #888    !important; color:#fff !important; }
+.btn.a-city      { background: #1a4a2a !important; border-color: #4CAF50 !important; color:#fff !important; }
+.btn.a-tog       { background: #2a1f5a !important; border-color: #9b59b6 !important; color:#fff !important; }
 
-.filter-btn {
-  border: 1.5px solid #dde3ee;
-  background: #fff;
-  border-radius: 20px;
-  padding: 4px 12px;
-  font-size: 11px;
-  cursor: pointer;
-  color: #333;
-  font-family: Arial, sans-serif;
-  transition: all 0.15s;
-}
-.filter-btn:hover { border-color: #1F3864; color: #1F3864; }
-.filter-btn.active { background: #1F3864; color: #fff; border-color: #1F3864; }
-.filter-btn.f-vip.active      { background: #c8960a; border-color: #c8960a; }
-.filter-btn.f-active.active   { background: #1F3864; border-color: #1F3864; }
-.filter-btn.f-prospect.active { background: #4A90D9; border-color: #4A90D9; }
-.filter-btn.f-inactive.active { background: #888;    border-color: #888; }
+select { border: 1.5px solid #2a3f5a; background: #162032; border-radius: 16px;
+         padding: 3px 10px; font-size: 10px; cursor: pointer; color: #ccd9e8;
+         font-family: Arial, sans-serif; outline: none; }
+select:hover { border-color: #4A90D9; }
 
-#search-box {
-  border: 1.5px solid #dde3ee;
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 12px;
-  font-family: Arial, sans-serif;
-  outline: none;
-  width: 180px;
-}
-#search-box:focus { border-color: #1F3864; }
+#search-box { border: 1.5px solid #2a3f5a; background: #162032; border-radius: 16px;
+              padding: 4px 12px; font-size: 11px; font-family: Arial, sans-serif;
+              outline: none; width: 140px; color: #fff; }
+#search-box::placeholder { color: #4a6a8a; }
+#search-box:focus { border-color: #4A90D9; }
 
-#reset-btn {
-  border: 1.5px solid #dde3ee;
-  background: #f7f9fc;
-  border-radius: 20px;
-  padding: 4px 14px;
-  font-size: 11px;
-  cursor: pointer;
-  color: #555;
-  font-family: Arial, sans-serif;
-}
-#reset-btn:hover { background: #e8edf5; }
+#canvas { flex: 1; position: relative; overflow: hidden; }
+svg { width: 100%; height: 100%; cursor: grab; }
+svg:active { cursor: grabbing; }
 
-#canvas {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
+.arc-path { fill: none; }
+.node-g { cursor: pointer; }
+.node-g.dragging { cursor: grabbing; }
+.node-label { font-family: Arial, sans-serif; font-size: 9px; fill: #ccd9e8;
+              pointer-events: none; paint-order: stroke;
+              stroke: rgba(10,20,30,0.85); stroke-width: 3px; }
+.city-lbl { font-family: Arial, sans-serif; font-size: 11px; font-weight: 700;
+            fill: #4CAF50; pointer-events: none;
+            paint-order: stroke; stroke: rgba(10,20,30,0.9); stroke-width: 4px; }
 
-svg { width: 100%; height: 100%; }
+#legend { position: absolute; bottom: 14px; right: 14px;
+          background: rgba(15,25,35,0.97); border: 1px solid #2a3f5a;
+          border-radius: 8px; padding: 10px 12px; font-size: 10px; min-width: 160px; }
+.leg-title { font-weight: 700; color: #F4B942; font-size: 10px;
+             text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.leg-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; color: #ccd9e8; }
+.leg-dot   { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+             border: 1.5px solid rgba(255,255,255,0.2); }
+.leg-swatch{ height: 3px; width: 20px; border-radius: 2px; flex-shrink: 0; }
+.leg-sep   { border-top: 1px solid #2a3f5a; margin: 6px 0; }
 
-#loading {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: #1F3864;
-  font-size: 15px;
-}
-#loading .spinner {
-  width: 40px; height: 40px;
-  border: 4px solid #dde3ee;
-  border-top-color: #1F3864;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 12px;
-}
-#error-msg {
-  display: none;
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 1px solid #e8d5d5;
-  border-radius: 8px;
-  padding: 20px 28px;
-  text-align: center;
-  color: #c0392b;
-  font-size: 13px;
-  max-width: 420px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-#error-msg strong { display: block; font-size: 15px; margin-bottom: 6px; }
-#error-msg .err-sub { color: #888; font-size: 11px; margin-top: 8px; }
+#tooltip { position: absolute; background: #162032; border: 1px solid #2a3f5a;
+           border-radius: 8px; padding: 11px 13px; font-size: 11px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.6); pointer-events: none;
+           opacity: 0; transition: opacity 0.12s; max-width: 240px; z-index: 200; }
+.tt-name  { font-size: 13px; font-weight: 700; color: #F4B942;
+            border-bottom: 1px solid #2a3f5a; padding-bottom: 6px; margin-bottom: 7px; }
+.tt-row   { display: flex; gap: 6px; margin-bottom: 3px; }
+.tt-key   { font-weight: 700; color: #7a9bbe; min-width: 70px; font-size: 10px; }
+.tt-val   { color: #ccd9e8; font-size: 10px; }
+.tt-badge { display: inline-block; border-radius: 10px; padding: 1px 7px;
+            font-size: 9px; font-weight: 700; }
+.tt-special{ color: #F4B942; font-weight: 700; font-size: 10px; margin-top: 4px; }
+.tt-notes { margin-top: 7px; padding-top: 5px; border-top: 1px solid #2a3f5a;
+            font-size: 9.5px; color: #7a9bbe; font-style: italic; line-height: 1.4; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.link { fill: none; stroke-linecap: round; }
-.link.direct { stroke: #1F3864; stroke-width: 2.5; stroke-opacity: 0.85; }
-.link.gen2   { stroke: #4A90D9; stroke-width: 2;   stroke-opacity: 0.75; }
-.link.gen3   { stroke: #2E86AB; stroke-width: 1.5; stroke-opacity: 0.65; }
-.link.gen4   { stroke: #89CFF0; stroke-width: 1.2; stroke-opacity: 0.6;  }
-.link.gen5   { stroke: #b0c4d8; stroke-width: 1;   stroke-opacity: 0.5;  }
-.link.faded  { stroke-opacity: 0.06; }
-
-.node circle {
-  stroke: #fff;
-  stroke-width: 2;
-  cursor: pointer;
-}
-.node.faded circle    { opacity: 0.12; }
-.node.faded text      { opacity: 0.08; }
-.node.highlighted circle { stroke: #F4B942; stroke-width: 4; }
-
-.node text {
-  font-size: 9.5px;
-  font-family: Arial, sans-serif;
-  fill: #222;
-  pointer-events: none;
-  text-anchor: middle;
-  font-weight: 600;
-  paint-order: stroke;
-  stroke: rgba(255,255,255,0.85);
-  stroke-width: 3px;
-}
-
-#tooltip {
-  position: absolute;
-  background: #fff;
-  border: 1px solid #dde3ee;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  max-width: 240px;
-  z-index: 100;
-}
-.tt-name {
-  font-size: 14px; font-weight: 700; color: #1F3864;
-  border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 8px;
-}
-.tt-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: flex-start; }
-.tt-key { font-weight: 700; color: #555; min-width: 72px; font-size: 11px; }
-.tt-val { color: #222; font-size: 11px; }
-.tt-badge {
-  display: inline-block; border-radius: 10px;
-  padding: 1px 8px; font-size: 10px; font-weight: 700; color: #fff;
-}
-.tt-notes {
-  margin-top: 8px; padding-top: 6px; border-top: 1px solid #eee;
-  font-size: 10.5px; color: #555; font-style: italic; line-height: 1.4;
-}
-
-#legend {
-  position: absolute;
-  bottom: 16px; right: 16px;
-  background: rgba(255,255,255,0.97);
-  border: 1px solid #dde3ee;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 11px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  min-width: 170px;
-}
-.leg-title {
-  font-weight: 700; color: #1F3864; font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;
-}
-.leg-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.leg-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.leg-line { height: 3px; width: 22px; border-radius: 2px; flex-shrink: 0; }
-.leg-sep  { border-top: 1px solid #eee; margin: 8px 0; }
-
-#hint {
-  position: absolute; bottom: 16px; left: 16px;
-  font-size: 10.5px; color: #888;
-  background: rgba(255,255,255,0.85);
-  border-radius: 6px; padding: 5px 10px;
-  border: 1px solid #eee;
-  display: none;
-}
+#node-count { position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+              font-size: 11px; color: #4a6a8a; background: rgba(15,25,35,0.9);
+              border-radius: 6px; padding: 3px 10px; border: 1px solid #2a3f5a;
+              pointer-events: none; opacity: 0; transition: opacity 0.4s; }
+#hint { position: absolute; bottom: 14px; left: 14px; font-size: 10px; color: #4a6a8a;
+        background: rgba(15,25,35,0.85); border-radius: 6px; padding: 4px 9px;
+        border: 1px solid #2a3f5a; }
 </style>
 </head>
 <body>
@@ -232,478 +106,946 @@ svg { width: 100%; height: 100%; }
 <div id="header">
   <div>
     <h1>Referral Intelligence Network</h1>
-    <p>Every node is a contact &nbsp;·&nbsp; Every line is a referral &nbsp;·&nbsp; Hover to explore</p>
+    <p>Physics layout · Zoom &amp; pan · Drag nodes · Click to focus</p>
   </div>
   <div id="stats">
-    <div class="stat-box"><div class="num" id="s-contacts">—</div><div class="lbl">Contacts</div></div>
-    <div class="stat-box"><div class="num" id="s-links">—</div><div class="lbl">Referral Links</div></div>
-    <div class="stat-box"><div class="num" id="s-vip">—</div><div class="lbl">VIP Customers</div></div>
-    <div class="stat-box"><div class="num" id="s-depth">5</div><div class="lbl">Max Generations</div></div>
+    <div class="stat-box"><div class="num" id="s-showing">50</div><div class="lbl">Showing</div></div>
+    <div class="stat-box"><div class="num" id="s-vip">10</div><div class="lbl">VIP</div></div>
+    <div class="stat-box"><div class="num" id="s-crown">1</div><div class="lbl">Crown</div></div>
+    <div class="stat-box"><div class="num" id="s-multi">3</div><div class="lbl">Multi-Ref</div></div>
   </div>
 </div>
 
 <div id="controls">
-  <div class="ctrl-group">
+  <div class="ctrl-grp">
+    <span class="ctrl-label">Layout</span>
+    <button class="btn active" id="btn-gen"  onclick="setLayout('generation',this)">By Generation</button>
+    <button class="btn"        id="btn-city" onclick="setLayout('city',this)">By City ●</button>
+  </div>
+  <div class="sep"></div>
+  <div class="ctrl-grp">
     <span class="ctrl-label">Status</span>
-    <button class="filter-btn active"      id="btn-all"      onclick="filterStatus('all',this)">All</button>
-    <button class="filter-btn f-vip"       onclick="filterStatus('VIP Customer',this)">VIP</button>
-    <button class="filter-btn f-active"    onclick="filterStatus('Active Customer',this)">Active</button>
-    <button class="filter-btn f-prospect"  onclick="filterStatus('Prospect',this)">Prospect</button>
-    <button class="filter-btn f-inactive"  onclick="filterStatus('Inactive',this)">Inactive</button>
+    <button class="btn active" id="btn-all"   onclick="filterStatus('all',this)">All</button>
+    <button class="btn"        id="btn-svip"  onclick="filterStatus('VIP Customer',this)">VIP</button>
+    <button class="btn"        id="btn-sact"  onclick="filterStatus('Active Customer',this)">Active</button>
+    <button class="btn"        id="btn-spro"  onclick="filterStatus('Prospect',this)">Prospect</button>
+    <button class="btn"        id="btn-sin"   onclick="filterStatus('Inactive',this)">Inactive</button>
   </div>
-  <div class="ctrl-group">
-    <span class="ctrl-label">Search</span>
-    <input id="search-box" type="text" placeholder="Type a name..." oninput="searchNode(this.value)">
+  <div class="sep"></div>
+  <div class="ctrl-grp">
+    <span class="ctrl-label">Hobby</span>
+    <select id="hobby-sel" onchange="filterHobby(this.value)">
+      <option value="all">All Hobbies</option>
+      <option value="Fishing">Fishing</option>
+      <option value="Golf">Golf</option>
+      <option value="Boating">Boating</option>
+      <option value="Firearms">Firearms</option>
+      <option value="Travel">Travel</option>
+    </select>
   </div>
-  <button id="reset-btn" onclick="resetAll()">&#8635; Reset</button>
+  <div class="sep"></div>
+  <div class="ctrl-grp">
+    <span class="ctrl-label">Show Only</span>
+    <button class="btn" id="btn-ref" onclick="toggleFilter('referred',this)">Has Referred</button>
+    <button class="btn" id="btn-rep" onclick="toggleFilter('repeat',this)">Repeat Buyers</button>
+    <button class="btn" id="btn-mul" onclick="toggleFilter('multi',this)">Multi-Referred</button>
+  </div>
+  <div class="sep"></div>
+  <div class="ctrl-grp">
+    <input id="search-box" type="text" placeholder="Search name…" oninput="searchNode(this.value)">
+  </div>
+  <button class="btn" onclick="resetAll()" style="margin-left:4px">↺ Reset</button>
 </div>
 
 <div id="canvas">
-  <svg id="svg"></svg>
-  <div id="loading"><div class="spinner"></div>Loading referral network from Google Sheets...</div>
-  <div id="error-msg">
-    <strong>Could not load data</strong>
-    Check that your Google Sheet is set to "Anyone with the link can view" and try refreshing.
-    <div class="err-sub" id="err-detail"></div>
-  </div>
+  <svg id="svg">
+    <defs>
+      <marker id="m-green" viewBox="0 -4 10 8" refX="16" refY="0"
+              markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M0,-4L10,0L0,4" fill="#27ae60"/>
+      </marker>
+      <marker id="m-red" viewBox="0 -4 10 8" refX="16" refY="0"
+              markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M0,-4L10,0L0,4" fill="#e74c3c"/>
+      </marker>
+      <marker id="m-gold" viewBox="0 -4 10 8" refX="16" refY="0"
+              markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M0,-4L10,0L0,4" fill="#F4B942"/>
+      </marker>
+    </defs>
+    <g id="root">
+      <g id="g-rings"></g>
+      <g id="g-arcs"></g>
+      <g id="g-nodes"></g>
+      <g id="g-labels"></g>
+    </g>
+  </svg>
+  <div id="node-count"></div>
   <div id="tooltip"></div>
+  <div id="hint">Scroll = zoom &nbsp;·&nbsp; Drag background = pan &nbsp;·&nbsp; Drag node = move (springs back in city mode) &nbsp;·&nbsp; Click = focus</div>
   <div id="legend">
-    <div class="leg-title">Contact Status</div>
+    <div class="leg-title">Status</div>
     <div class="leg-item"><div class="leg-dot" style="background:#F4B942"></div>VIP Customer</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#1F3864"></div>Active Customer</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#4A90D9"></div>Prospect</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#AAAAAA"></div>Inactive</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#2980b9"></div>Active Customer</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#27ae60"></div>Prospect</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#555"></div>Inactive</div>
     <div class="leg-sep"></div>
-    <div class="leg-title">Referral Generation</div>
-    <div class="leg-item"><div class="leg-line" style="background:#1F3864"></div>Direct Referral</div>
-    <div class="leg-item"><div class="leg-line" style="background:#4A90D9;height:2px"></div>2nd Generation</div>
-    <div class="leg-item"><div class="leg-line" style="background:#2E86AB;height:2px"></div>3rd Generation</div>
-    <div class="leg-item"><div class="leg-line" style="background:#89CFF0;height:1.5px"></div>4th Generation</div>
-    <div class="leg-item"><div class="leg-line" style="background:#b0c4d8;height:1px"></div>5th Generation</div>
+    <div class="leg-title">Special</div>
+    <div class="leg-item"><span>👑</span>Crown — Top Referrer</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9b59b6;border-color:#F4B942"></div>Multi-Referred</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#555;border-style:dashed"></div>Direct Client</div>
+    <div class="leg-sep"></div>
+    <div class="leg-title">Arcs (on focus)</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:#27ae60"></div>Outgoing referral</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:#e74c3c"></div>Incoming referral</div>
+    <div class="leg-item"><div class="leg-swatch" style="background:#F4B942"></div>Multi-referral link</div>
   </div>
-  <div id="hint">Scroll to zoom &nbsp;·&nbsp; Drag to pan &nbsp;·&nbsp; Click node to focus</div>
 </div>
 
 <script>
-// ── Sheet configuration ───────────────────────────────────────────────────
-var SHEET_ID = '1TH8B91Qy8uy-o-WHAIRukV0AByzYmXQVVZ33f-vZklU';
+// ═══════════════════════════════════════════════════════
+// GOOGLE SHEET CONFIGURATION
+// ─────────────────────────────────────────────────────
+// To connect this visual to a live Google Sheet:
+//   1. Upload crm_poc_v4.xlsx to Google Drive and open
+//      it as Google Sheets format.
+//   2. Share the sheet: Share → Anyone with the link → Viewer.
+//   3. Copy the Sheet ID from the URL (the long string
+//      between /d/ and /edit).
+//   4. Paste it as the value of SHEET_ID below.
+//   5. The two CSV URLs are built automatically — do not
+//      edit them unless your tab names differ.
+//   6. Uncomment the loadFromSheet() call in init() and
+//      comment out the hardcoded NODES_DATA / LINKS_DATA
+//      blocks below.
+//
+// NOTE: The file must be served over HTTP (not opened
+// directly as file://) for the fetch to work.
+// Use: python3 -m http.server 8080
+// ═══════════════════════════════════════════════════════
+var SHEET_ID      = '1IgTFqHOszUg9NKcMIFDGGQ6W9VUf0icg9pOigEuBJRQ';   // ← paste your Google Sheet ID here
 
-var NODES_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-  '/gviz/tq?tqx=out:csv&sheet=Referral_Nodes';
-var LINKS_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-  '/gviz/tq?tqx=out:csv&sheet=Referral_Links';
+var NODES_URL     = SHEET_ID
+  ? 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Referral_Nodes'
+  : '';
 
-// ── Visual config ─────────────────────────────────────────────────────────
-var STATUS_COLOR = {
-  'VIP Customer':    '#F4B942',
-  'Active Customer': '#1F3864',
-  'Prospect':        '#4A90D9',
-  'Inactive':        '#AAAAAA'
-};
-var STATUS_RADIUS = {
-  'VIP Customer':    14,
-  'Active Customer': 11,
-  'Prospect':        9,
-  'Inactive':        8
-};
-var STATUS_BADGE = {
-  'VIP Customer':    '#c8960a',
-  'Active Customer': '#1F3864',
-  'Prospect':        '#4A90D9',
-  'Inactive':        '#888'
-};
-var LINK_CLASS = {
-  'Direct Referral': 'direct',
-  '2nd Generation':  'gen2',
-  '3rd Generation':  'gen3',
-  '4th Generation':  'gen4',
-  '5th Generation':  'gen5'
-};
+var LINKS_URL     = SHEET_ID
+  ? 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Referral_Links'
+  : '';
 
-// ── CSV parser ────────────────────────────────────────────────────────────
-function parseCSV(text) {
+// Contacts_Accounts tab — used to build the hobby filter live from the sheet.
+// Reads Hobby_Fishing, Hobby_Golf, Hobby_Boating, Hobby_Firearms, Hobby_Travel columns.
+var CONTACTS_URL  = SHEET_ID
+  ? 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=Contacts_Accounts'
+  : '';
+
+// ── CSV parser (same as v2) ───────────────────────────
+function parseCSV(text){
   var lines = text.trim().split('\n');
-  var headers = lines[0].split(',').map(function(h) {
-    return h.replace(/"/g, '').trim();
-  });
-  return lines.slice(1).map(function(line) {
-    var vals = [];
-    var cur = '';
-    var inQ = false;
-    for (var i = 0; i < line.length; i++) {
+  var headers = lines[0].split(',').map(function(h){ return h.replace(/"/g,'').trim(); });
+  return lines.slice(1).map(function(line){
+    var vals = [], cur = '', inQ = false;
+    for (var i=0; i<line.length; i++){
       var ch = line[i];
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { vals.push(cur); cur = ''; }
-      else { cur += ch; }
+      if (ch==='"'){ inQ=!inQ; }
+      else if (ch===','&&!inQ){ vals.push(cur); cur=''; }
+      else { cur+=ch; }
     }
     vals.push(cur);
     var obj = {};
-    headers.forEach(function(h, i) {
-      obj[h] = (vals[i] || '').replace(/^"|"$/g, '').trim();
-    });
+    headers.forEach(function(h,i){ obj[h]=(vals[i]||'').replace(/^"|"$/g,'').trim(); });
     return obj;
   });
 }
 
-// ── Map raw CSV rows to node/link objects ─────────────────────────────────
-function mapNode(r) {
+// ── Map sheet rows → node/link objects ───────────────
+function mapSheetNode(r){
   return {
-    id:          r['ID']              || '',
-    label:       r['Label']           || '',
-    status:      r['Customer Status'] || 'Prospect',
-    priority:    r['Priority']        || '',
-    profession:  r['Profession']      || '',
-    city:        r['City']            || '',
-    state:       r['State']           || '',
-    repeatBuyer: r['Repeat Buyer']    || '',
-    notes:       r['Notes']           || ''
+    id:           r['ID']               || '',
+    label:        r['Label']            || '',
+    status:       r['Customer Status']  || 'Prospect',
+    priority:     r['Priority']         || '',
+    profession:   r['Profession']       || '',
+    profCat:      r['Profession Category'] || '',
+    city:         r['City']             || '',
+    state:        r['State']            || '',
+    repeatBuyer:  r['Repeat Buyer']     || 'No',
+    multiRef:     r['Is Multi-Referred']|| 'No',
+    directClient: r['Is Direct Client'] || 'No',
+    crown:        r['Crown Node']       || 'No',
+    notes:        r['Notes']            || '',
+    generation:   parseInt(r['Generation']||'0', 10) || 0,
+    x: 0, y: 0, vx: 0, vy: 0
   };
 }
 
-function mapLink(r) {
+function mapSheetLink(r){
   return {
-    source: r['Source Account ID'] || '',
-    target: r['Target Account ID'] || '',
-    type:   r['Referral Type']     || 'Direct Referral'
+    source:    r['Source Account ID'] || '',
+    target:    r['Target Account ID'] || '',
+    type:      r['Referral Type']     || 'Direct Referral',
+    multiLink: r['Is Multi-Referral Link'] || 'No'
   };
 }
 
-// ── Fetch both sheets then build graph ────────────────────────────────────
-function loadData() {
-  var nodesReq = new XMLHttpRequest();
-  var linksReq = new XMLHttpRequest();
-  var nodesDone = false;
-  var linksDone = false;
-  var nodesData = null;
-  var linksData = null;
+// ── Live load function (call from init when SHEET_ID is set) ──
+function loadFromSheet(){
+  if (!SHEET_ID){ console.warn('SHEET_ID not set — using hardcoded data.'); return; }
+  var loaded = 0;
+  // Wait for all 3 requests (nodes, links, contacts) before calling init
+  function onAllLoaded(){ if (++loaded === 3){ buildNodeMap(); init(); } }
 
-  function checkBothDone() {
-    if (nodesDone && linksDone) {
-      if (nodesData && linksData) {
-        buildGraph(nodesData, linksData);
-      }
-    }
-  }
+  // ── Referral_Nodes ──────────────────────────────────────────
+  var nReq = new XMLHttpRequest();
+  nReq.open('GET', NODES_URL, true);
+  nReq.onload = function(){
+    if (nReq.status === 200){
+      NODES_DATA.length = 0;
+      parseCSV(nReq.responseText).map(mapSheetNode)
+        .filter(function(n){ return n.id !== ''; })
+        .forEach(function(n){ NODES_DATA.push(n); });
+    } else { console.error('Nodes fetch error:', nReq.status); }
+    onAllLoaded();
+  };
+  nReq.onerror = function(){
+    console.error('Network error loading Referral_Nodes');
+    onAllLoaded();
+  };
+  nReq.send();
 
-  nodesReq.open('GET', NODES_URL, true);
-  nodesReq.onload = function() {
-    if (nodesReq.status === 200) {
-      nodesData = parseCSV(nodesReq.responseText).map(mapNode).filter(function(n) {
-        return n.id !== '';
+  // ── Referral_Links ──────────────────────────────────────────
+  var lReq = new XMLHttpRequest();
+  lReq.open('GET', LINKS_URL, true);
+  lReq.onload = function(){
+    if (lReq.status === 200){
+      LINKS.length = 0;
+      var seen = {};
+      parseCSV(lReq.responseText).map(mapSheetLink)
+        .filter(function(l){ return l.source !== '' && l.target !== ''; })
+        .forEach(function(l){
+          var k = l.source + '|' + l.target;
+          if (!seen[k]){ seen[k] = true; LINKS.push(l); }
+        });
+    } else { console.error('Links fetch error:', lReq.status); }
+    onAllLoaded();
+  };
+  lReq.onerror = function(){
+    console.error('Network error loading Referral_Links');
+    onAllLoaded();
+  };
+  lReq.send();
+
+  // ── Contacts_Accounts — hobby flags ────────────────────────
+  // Reads Hobby_Fishing, Hobby_Golf, Hobby_Boating, Hobby_Firearms, Hobby_Travel
+  // and rebuilds HOBBY_MAP so the hobby filter always reflects the live sheet.
+  var cReq = new XMLHttpRequest();
+  cReq.open('GET', CONTACTS_URL, true);
+  cReq.onload = function(){
+    if (cReq.status === 200){
+      var rows = parseCSV(cReq.responseText);
+      // Reset HOBBY_MAP before rebuilding
+      Object.keys(HOBBY_MAP).forEach(function(k){ delete HOBBY_MAP[k]; });
+      rows.forEach(function(r){
+        var id = (r['Account ID'] || '').trim();
+        if (!id) return;
+        var hobbies = [];
+        if (r['Hobby_Fishing']  === 'Yes') hobbies.push('Fishing');
+        if (r['Hobby_Golf']     === 'Yes') hobbies.push('Golf');
+        if (r['Hobby_Boating']  === 'Yes') hobbies.push('Boating');
+        if (r['Hobby_Firearms'] === 'Yes') hobbies.push('Firearms');
+        if (r['Hobby_Travel']   === 'Yes') hobbies.push('Travel');
+        HOBBY_MAP[id] = hobbies;
       });
-    } else {
-      showError('Nodes sheet returned status ' + nodesReq.status);
-    }
-    nodesDone = true;
-    checkBothDone();
+    } else { console.error('Contacts fetch error:', cReq.status); }
+    onAllLoaded();
   };
-  nodesReq.onerror = function() {
-    showError('Network error loading Referral_Nodes. Is the sheet public?');
+  cReq.onerror = function(){
+    console.error('Network error loading Contacts_Accounts');
+    onAllLoaded();
   };
-  nodesReq.send();
-
-  linksReq.open('GET', LINKS_URL, true);
-  linksReq.onload = function() {
-    if (linksReq.status === 200) {
-      linksData = parseCSV(linksReq.responseText).map(mapLink).filter(function(l) {
-        return l.source !== '' && l.target !== '';
-      });
-    } else {
-      showError('Links sheet returned status ' + linksReq.status);
-    }
-    linksDone = true;
-    checkBothDone();
-  };
-  linksReq.onerror = function() {
-    showError('Network error loading Referral_Links. Is the sheet public?');
-  };
-  linksReq.send();
+  cReq.send();
 }
 
-function showError(detail) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error-msg').style.display = 'block';
-  document.getElementById('err-detail').textContent = detail;
+function buildNodeMap(){
+  nodeMap = {};
+  NODES_DATA.forEach(function(n){ nodeMap[n.id]=n; });
+  hasReferred = {};
+  LINKS.forEach(function(l){ hasReferred[l.source]=true; });
 }
 
-// ── Graph globals ─────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────
+// DATA (hardcoded fallback — used when SHEET_ID is blank)
+// To switch to live sheet: set SHEET_ID above, then in
+// init() replace   renderArcs(); renderNodes();
+// with             loadFromSheet(); return;
+//
+// loadFromSheet() fetches all three URLs:
+//   NODES_URL     → Referral_Nodes tab  (node positions + generation)
+//   LINKS_URL     → Referral_Links tab  (connections)
+//   CONTACTS_URL  → Contacts_Accounts   (hobby flags for the hobby filter)
+// ─────────────────────────────────────────────────────
+
+//var NODES_DATA = [{"id":"ACC-0001","label":"Jason Gaines","status":"Active Customer","priority":"Medium","profession":"Fireman","profCat":"Firefighter","city":"Gainesville","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Sherod Keen (external). 2025 intake.","generation":0},{"id":"ACC-0002","label":"Mark Ruiz","status":"Active Customer","priority":"High","profession":"Contractor","profCat":"Contractor","city":"Miami","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Linda Perez. 2025 intake.","generation":0},{"id":"ACC-0003","label":"Angela Morris","status":"Active Customer","priority":"Low","profession":"Teacher","profCat":"Other","city":"Atlanta","state":"GA","repeatBuyer":"No","multiRef":"No","directClient":"Yes","crown":"No","notes":"Direct client — met at community event.","generation":6},{"id":"ACC-0004","label":"Derrick Thompson","status":"VIP Customer","priority":"High","profession":"Business Owner","profCat":"Business Owner","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"Yes","directClient":"No","crown":"Yes","notes":"CROWN NODE — 6 direct referrals, all purchased. Chains run 4+ generations deep.","generation":0},{"id":"ACC-0005","label":"Nicole Foster","status":"Prospect","priority":"Medium","profession":"Realtor","profCat":"Real Estate","city":"Nashville","state":"TN","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Event lead — trade show. 2025 intake.","generation":0},{"id":"ACC-0006","label":"Howard Baxter","status":"Active Customer","priority":"Medium","profession":"Retired Fireman","profCat":"Firefighter","city":"Raleigh","state":"NC","repeatBuyer":"Yes","multiRef":"No","directClient":"Yes","crown":"No","notes":"Direct client — neighborhood intro. Referred Megan Lee.","generation":6},{"id":"ACC-0007","label":"Samantha Blake","status":"Prospect","priority":"Low","profession":"Nurse","profCat":"Medical","city":"Phoenix","state":"AZ","repeatBuyer":"No","multiRef":"No","directClient":"Yes","crown":"No","notes":"Direct client — farmers market. No referral chain.","generation":6},{"id":"ACC-0008","label":"Thomas Greene","status":"Active Customer","priority":"High","profession":"Police Officer","profCat":"Law Enforcement","city":"Salt Lake City","state":"UT","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Sherod Keen. Referred Xavier Rodriguez.","generation":0},{"id":"ACC-0009","label":"Olivia Chen","status":"Prospect","priority":"Medium","profession":"Attorney","profCat":"Legal","city":"Seattle","state":"WA","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Web lead. 2026 intake.","generation":0},{"id":"ACC-0010","label":"Brian Coleman","status":"VIP Customer","priority":"High","profession":"Entrepreneur","profCat":"Business Owner","city":"St. Louis","state":"MO","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Past client referral. Referred Chris Ballard and Spencer York.","generation":0},{"id":"ACC-0011","label":"Marcus Webb","status":"VIP Customer","priority":"High","profession":"Firefighter Captain","profCat":"Firefighter","city":"Scottsdale","state":"AZ","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Derrick Thompson. Referred Ray Donovan.","generation":1},{"id":"ACC-0012","label":"Linda Perez","status":"Active Customer","priority":"High","profession":"Real Estate Agent","profCat":"Real Estate","city":"Miami","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Mark Ruiz. Referred Sandra Kim and Gloria Tran.","generation":1},{"id":"ACC-0013","label":"Carlos Hill","status":"Active Customer","priority":"High","profession":"Master Electrician","profCat":"Contractor","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Derrick Thompson. Referred Patricia Nguyen and Hank Delgado.","generation":1},{"id":"ACC-0014","label":"Rachel Okonkwo","status":"Prospect","priority":"Medium","profession":"Physician","profCat":"Medical","city":"Chicago","state":"IL","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Social lead. 2026 intake.","generation":0},{"id":"ACC-0015","label":"Megan Lee","status":"Active Customer","priority":"Medium","profession":"Interior Designer","profCat":"Other","city":"Raleigh","state":"NC","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Howard Baxter. Referred Cynthia Odom.","generation":1},{"id":"ACC-0016","label":"Steve Callahan","status":"Inactive","priority":"Low","profession":"Retired Police Officer","profCat":"Law Enforcement","city":"Phoenix","state":"AZ","repeatBuyer":"No","multiRef":"No","directClient":"Yes","crown":"No","notes":"Direct client — gun show. No contact 6+ months.","generation":6},{"id":"ACC-0017","label":"Patricia Nguyen","status":"VIP Customer","priority":"High","profession":"Restaurant Owner","profCat":"Restaurant / Food","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Carlos Hill. Referred Victor Morales (VIP).","generation":2},{"id":"ACC-0018","label":"Devon Harris","status":"Prospect","priority":"Medium","profession":"Financial Advisor","profCat":"Finance","city":"Atlanta","state":"GA","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Event lead — trade show. 2026 intake.","generation":0},{"id":"ACC-0019","label":"Sandra Kim","status":"Active Customer","priority":"High","profession":"Dentist","profCat":"Medical","city":"Miami","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Linda Perez. Referred Elena Vasquez and Keisha Lawson.","generation":2},{"id":"ACC-0020","label":"Bill Marsh","status":"Inactive","priority":"Low","profession":"Retired Teacher","profCat":"Other","city":"Indianapolis","state":"IN","repeatBuyer":"No","multiRef":"No","directClient":"Yes","crown":"No","notes":"Direct client — met at church. No contact 3+ months.","generation":6},{"id":"ACC-0021","label":"Xavier Rodriguez","status":"Active Customer","priority":"High","profession":"General Contractor","profCat":"Contractor","city":"Salt Lake City","state":"UT","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Thomas Greene. Referred Dan Kowalski.","generation":1},{"id":"ACC-0022","label":"Tiffany Jackson","status":"Prospect","priority":"Medium","profession":"Nurse Practitioner","profCat":"Medical","city":"Atlanta","state":"GA","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Social lead. 2026 intake.","generation":0},{"id":"ACC-0023","label":"Paul Hutchinson","status":"Active Customer","priority":"High","profession":"CPA / Accountant","profCat":"Finance","city":"Fort Worth","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Derrick Thompson. Referred Jake Thornton.","generation":1},{"id":"ACC-0024","label":"Gloria Tran","status":"VIP Customer","priority":"High","profession":"Business Owner","profCat":"Business Owner","city":"Miami","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Linda Perez. Referred Monica Grant.","generation":2},{"id":"ACC-0025","label":"Justin Moore","status":"Prospect","priority":"Medium","profession":"Firefighter / EMT","profCat":"Firefighter","city":"Nashville","state":"TN","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Social lead. 2026 intake.","generation":0},{"id":"ACC-0026","label":"Ray Donovan","status":"VIP Customer","priority":"High","profession":"Fire Battalion Chief","profCat":"Firefighter","city":"Scottsdale","state":"AZ","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Marcus Webb. Purchased immediately.","generation":2},{"id":"ACC-0027","label":"Elena Vasquez","status":"Active Customer","priority":"High","profession":"Orthodontist","profCat":"Medical","city":"Miami","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Sandra Kim. Referred Lila Pham.","generation":3},{"id":"ACC-0028","label":"Jake Thornton","status":"Active Customer","priority":"High","profession":"Tax Attorney","profCat":"Legal","city":"Fort Worth","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Paul Hutchinson. Referred Brent Simmons.","generation":2},{"id":"ACC-0029","label":"Chris Ballard","status":"Active Customer","priority":"High","profession":"Entrepreneur","profCat":"Business Owner","city":"St. Louis","state":"MO","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Brian Coleman.","generation":1},{"id":"ACC-0030","label":"Monica Grant","status":"Active Customer","priority":"High","profession":"Accountant","profCat":"Finance","city":"Coral Gables","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Gloria Tran. Referred Sandra Norris.","generation":3},{"id":"ACC-0031","label":"Travis Reed","status":"VIP Customer","priority":"High","profession":"Oil & Gas Executive","profCat":"Business Owner","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Derrick Thompson. Referred James Whitfield and Russell Hawkins.","generation":1},{"id":"ACC-0032","label":"Natalie Brooks","status":"Prospect","priority":"Medium","profession":"Real Estate Agent","profCat":"Real Estate","city":"Nashville","state":"TN","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Nicole Foster. Referred Jasmine Owens.","generation":1},{"id":"ACC-0033","label":"Dan Kowalski","status":"Prospect","priority":"Medium","profession":"General Contractor","profCat":"Contractor","city":"Salt Lake City","state":"UT","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Xavier Rodriguez.","generation":2},{"id":"ACC-0034","label":"Priya Sharma","status":"Prospect","priority":"Medium","profession":"Corporate Attorney","profCat":"Legal","city":"Chicago","state":"IL","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Social lead — LinkedIn. 2026 intake.","generation":0},{"id":"ACC-0035","label":"Hank Delgado","status":"Active Customer","priority":"High","profession":"Plumbing Contractor","profCat":"Contractor","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Carlos Hill.","generation":2},{"id":"ACC-0036","label":"James Whitfield","status":"Active Customer","priority":"High","profession":"Energy Consultant","profCat":"Business Owner","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Travis Reed.","generation":2},{"id":"ACC-0037","label":"Cynthia Odom","status":"Prospect","priority":"Medium","profession":"Interior Designer","profCat":"Other","city":"Raleigh","state":"NC","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Megan Lee.","generation":2},{"id":"ACC-0038","label":"Russell Hawkins","status":"VIP Customer","priority":"High","profession":"Commercial Real Estate","profCat":"Real Estate","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"Yes","directClient":"No","crown":"No","notes":"MULTI-REFERRED by Derrick Thompson AND Travis Reed. Referred Aaron Flynn.","generation":1},{"id":"ACC-0039","label":"Keisha Lawson","status":"Prospect","priority":"Medium","profession":"Physician","profCat":"Medical","city":"Miami","state":"FL","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Sandra Kim.","generation":3},{"id":"ACC-0040","label":"Victor Morales","status":"VIP Customer","priority":"High","profession":"Restaurant Owner","profCat":"Restaurant / Food","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Patricia Nguyen. Referred Marco Ricci.","generation":3},{"id":"ACC-0041","label":"Spencer York","status":"Prospect","priority":"Medium","profession":"Financial Planner","profCat":"Finance","city":"St. Louis","state":"MO","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Brian Coleman.","generation":1},{"id":"ACC-0042","label":"Aaron Flynn","status":"Active Customer","priority":"High","profession":"Insurance Executive","profCat":"Finance","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Russell Hawkins. Referred Derek Moss (multi-referred).","generation":3},{"id":"ACC-0043","label":"Lila Pham","status":"Prospect","priority":"Medium","profession":"Dental Specialist","profCat":"Medical","city":"Key Biscayne","state":"FL","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Elena Vasquez. Referred Rosa Medina.","generation":4},{"id":"ACC-0044","label":"Brent Simmons","status":"Active Customer","priority":"High","profession":"Real Estate Developer","profCat":"Real Estate","city":"Fort Worth","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Jake Thornton.","generation":3},{"id":"ACC-0045","label":"Marco Ricci","status":"Prospect","priority":"Medium","profession":"Chef / Restaurateur","profCat":"Restaurant / Food","city":"Houston","state":"TX","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Victor Morales.","generation":4},{"id":"ACC-0046","label":"Sandra Norris","status":"Active Customer","priority":"High","profession":"CPA Firm Partner","profCat":"Finance","city":"Coral Gables","state":"FL","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Monica Grant. Also referred Derek Moss.","generation":4},{"id":"ACC-0047","label":"Derek Moss","status":"Prospect","priority":"High","profession":"Insurance Broker","profCat":"Finance","city":"Houston","state":"TX","repeatBuyer":"No","multiRef":"Yes","directClient":"No","crown":"No","notes":"MULTI-REFERRED by Aaron Flynn AND Sandra Norris from different social circles. High value signal.","generation":4},{"id":"ACC-0048","label":"Jasmine Owens","status":"Prospect","priority":"Medium","profession":"Real Estate Agent","profCat":"Real Estate","city":"Nashville","state":"TN","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Natalie Brooks.","generation":2},{"id":"ACC-0049","label":"Gene Holloway","status":"Active Customer","priority":"High","profession":"Attorney / Partner","profCat":"Legal","city":"Houston","state":"TX","repeatBuyer":"Yes","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Derrick Thompson.","generation":1},{"id":"ACC-0050","label":"Rosa Medina","status":"Prospect","priority":"Low","profession":"Dental Hygienist","profCat":"Medical","city":"Miami","state":"FL","repeatBuyer":"No","multiRef":"No","directClient":"No","crown":"No","notes":"Referred by Lila Pham. 5th generation from Linda Perez chain.","generation":5}];
+
+//var LINKS_DATA = [{"source":"ACC-0004","target":"ACC-0011","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0004","target":"ACC-0013","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0004","target":"ACC-0023","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0004","target":"ACC-0031","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0004","target":"ACC-0038","type":"Direct Referral","multiLink":"Yes"},{"source":"ACC-0004","target":"ACC-0049","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0011","target":"ACC-0026","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0013","target":"ACC-0017","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0013","target":"ACC-0035","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0023","target":"ACC-0028","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0031","target":"ACC-0036","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0031","target":"ACC-0038","type":"2nd Generation","multiLink":"Yes"},{"source":"ACC-0038","target":"ACC-0042","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0017","target":"ACC-0040","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0028","target":"ACC-0044","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0040","target":"ACC-0045","type":"4th Generation","multiLink":"No"},{"source":"ACC-0042","target":"ACC-0047","type":"4th Generation","multiLink":"Yes"},{"source":"ACC-0002","target":"ACC-0012","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0012","target":"ACC-0019","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0012","target":"ACC-0024","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0019","target":"ACC-0027","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0019","target":"ACC-0039","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0024","target":"ACC-0030","type":"3rd Generation","multiLink":"No"},{"source":"ACC-0027","target":"ACC-0043","type":"4th Generation","multiLink":"No"},{"source":"ACC-0030","target":"ACC-0046","type":"4th Generation","multiLink":"No"},{"source":"ACC-0046","target":"ACC-0047","type":"5th Generation","multiLink":"Yes"},{"source":"ACC-0043","target":"ACC-0050","type":"5th Generation","multiLink":"No"},{"source":"ACC-0006","target":"ACC-0015","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0015","target":"ACC-0037","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0008","target":"ACC-0021","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0021","target":"ACC-0033","type":"2nd Generation","multiLink":"No"},{"source":"ACC-0010","target":"ACC-0029","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0010","target":"ACC-0041","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0005","target":"ACC-0032","type":"Direct Referral","multiLink":"No"},{"source":"ACC-0032","target":"ACC-0048","type":"2nd Generation","multiLink":"No"}];
+
+//var HOBBY_MAP={"ACC-0001":["Fishing","Boating"],"ACC-0002":["Fishing","Boating","Hunting"],"ACC-0003":["Cooking","Travel"],"ACC-0004":["Golf","Firearms","Fishing"],"ACC-0005":["Golf","Travel"],"ACC-0006":["Fishing","Boating","Travel"],"ACC-0007":["Travel","Cooking"],"ACC-0008":["Firearms","Hunting","Fishing"],"ACC-0009":["Golf","Travel"],"ACC-0010":["Golf","Travel","Boating"],"ACC-0011":["Fishing","Boating","Hunting"],"ACC-0012":["Golf","Travel","Cooking"],"ACC-0013":["Fishing","Hunting","Boating"],"ACC-0014":["Golf","Travel"],"ACC-0015":["Travel","Cooking"],"ACC-0016":["Firearms","Hunting"],"ACC-0017":["Fishing","Boating","Travel"],"ACC-0018":["Golf","Travel"],"ACC-0019":["Travel","Cooking","Golf"],"ACC-0020":["Travel","Cooking"],"ACC-0021":["Firearms","Hunting","Fishing"],"ACC-0022":["Cooking","Travel"],"ACC-0023":["Golf","Travel"],"ACC-0024":["Boating","Travel","Golf"],"ACC-0025":["Fishing","Boating"],"ACC-0026":["Fishing","Boating","Hunting"],"ACC-0027":["Golf","Travel","Cooking"],"ACC-0028":["Golf","Travel"],"ACC-0029":["Boating","Golf","Travel"],"ACC-0030":["Travel","Cooking"],"ACC-0031":["Fishing","Boating","Firearms","Hunting"],"ACC-0032":["Cooking","Travel"],"ACC-0033":["Fishing","Hunting","Firearms"],"ACC-0034":["Golf","Travel"],"ACC-0035":["Fishing","Hunting"],"ACC-0036":["Fishing","Firearms","Boating"],"ACC-0037":["Travel","Cooking"],"ACC-0038":["Golf","Boating","Travel"],"ACC-0039":["Golf","Travel","Cooking"],"ACC-0040":["Fishing","Boating","Cooking"],"ACC-0041":["Golf","Travel"],"ACC-0042":["Golf","Boating","Travel"],"ACC-0043":["Cooking","Travel"],"ACC-0044":["Golf","Fishing","Boating"],"ACC-0045":["Cooking","Fishing"],"ACC-0046":["Golf","Travel"],"ACC-0047":["Golf","Boating"],"ACC-0048":["Cooking","Travel"],"ACC-0049":["Golf","Fishing","Travel"],"ACC-0050":["Cooking","Travel"]};
+
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+var STATUS_COLOR  = {"VIP Customer":"#F4B942","Active Customer":"#2980b9","Prospect":"#27ae60","Inactive":"#555"};
+var STATUS_R      = {"VIP Customer":13,"Active Customer":11,"Prospect":9,"Inactive":8};
+var STATUS_BADGE  = {"VIP Customer":"#8a6a00","Active Customer":"#1a4a7a","Prospect":"#1a4a2a","Inactive":"#333"};
+var CITY_COLORS   = ["#27ae60","#2980b9","#e67e22","#9b59b6","#e74c3c","#1abc9c",
+                     "#f39c12","#d35400","#16a085","#8e44ad","#2ecc71","#3498db",
+                     "#e74c3c","#f1c40f","#c0392b","#7f8c8d"];
+
+// ═══════════════════════════════════════════════════════
+// LOOKUP STRUCTURES
+// ═══════════════════════════════════════════════════════
 var nodeMap = {};
-var simulation, nodeSel, linkSel, svgEl, gEl, zoomBehavior;
-var focusedId = null;
-var canvasEl = document.getElementById('canvas');
+NODES_DATA.forEach(function(n){ nodeMap[n.id] = n; });
 
-// ── Build graph ───────────────────────────────────────────────────────────
-function buildGraph(rawNodes, rawLinks) {
-  // Hide loading
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('hint').style.display = 'block';
+var hasReferred = {};
+LINKS_DATA.forEach(function(l){ hasReferred[l.source] = true; });
 
-  // Update stats
-  document.getElementById('s-contacts').textContent = rawNodes.length;
-  document.getElementById('s-links').textContent = rawLinks.length;
-  document.getElementById('s-vip').textContent = rawNodes.filter(function(n) {
-    return n.status === 'VIP Customer';
-  }).length;
+// Deduplicate links
+var seenL = {}, LINKS = [];
+LINKS_DATA.forEach(function(l){
+  var k = l.source+'|'+l.target;
+  if (!seenL[k]){ seenL[k]=true; LINKS.push(l); }
+});
 
-  // Build id map
-  rawNodes.forEach(function(n) { nodeMap[n.id] = n; });
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+var W, H, CX, CY;
+var layoutMode = 'generation';
+var focusedId  = null;
+var filterState = {status:'all', hobby:'all', referred:false, repeat:false, multi:false};
 
-  // Deduplicate links
-  var seen = {};
-  var links = rawLinks.filter(function(l) {
-    var k = l.source + '|' + l.target;
-    if (seen[k]) return false;
-    seen[k] = true;
-    return true;
+// Target positions used by physics sim
+var targetX = {}, targetY = {};
+var nodeVisible = {}; // id -> bool
+
+// City data (computed during city layout)
+var cityData = [];
+var cityColorMap = {};
+
+// ═══════════════════════════════════════════════════════
+// D3 FORCE SIMULATION (always running)
+// ═══════════════════════════════════════════════════════
+
+// Give each node initial random position
+NODES_DATA.forEach(function(n){
+  n.x = 400 + (Math.random()-0.5)*200;
+  n.y = 300 + (Math.random()-0.5)*200;
+  n.vx = 0; n.vy = 0;
+});
+
+var sim = d3.forceSimulation(NODES_DATA)
+  // Spring pulls nodes toward their layout target positions.
+  // Strength 0.22 is gentle enough that collision pushes can propagate
+  // to neighbours before the spring drags the node back.
+  .force('tx', d3.forceX(function(d){ return targetX[d.id] || CX || 400; }).strength(0.22))
+  .force('ty', d3.forceY(function(d){ return targetY[d.id] || CY || 300; }).strength(0.22))
+  // Collision — hard boundary, fully enforced, 6 resolution passes per tick.
+  // Radius slightly larger than the visible node so a dragged node registers
+  // contact before it visually overlaps its neighbour.
+  .force('collide', d3.forceCollide(function(d){
+    return nodeVisible[d.id] ? (STATUS_R[d.status]||10) + 6 : 0;
+  }).strength(1.0).iterations(6))
+  // Light charge repulsion — makes nearby nodes feel each other even before
+  // touching, so a drag ripples outward through the group naturally.
+  // distanceMax(80) limits the effect to close neighbours only.
+  .force('repulse', d3.forceManyBody()
+    .strength(function(d){ return nodeVisible[d.id] ? -30 : 0; })
+    .distanceMax(80))
+  .alpha(0)
+  .alphaDecay(0.022)
+  .velocityDecay(0.48)
+  .on('tick', onTick);
+
+// ═══════════════════════════════════════════════════════
+// SVG SETUP
+// ═══════════════════════════════════════════════════════
+var svgD3   = d3.select('#svg');
+var rootG   = d3.select('#root');
+var ringsG  = d3.select('#g-rings');
+var arcsG   = d3.select('#g-arcs');
+var nodesG  = d3.select('#g-nodes');
+var labelsG = d3.select('#g-labels');
+
+var zoomBehavior = d3.zoom()
+  .scaleExtent([0.12, 5])
+  .filter(function(event){
+    return !event.target.closest('.node-g') || event.type==='wheel';
+  })
+  .on('zoom', function(event){
+    rootG.attr('transform', event.transform);
+  });
+svgD3.call(zoomBehavior);
+
+// Click background → clear focus
+svgD3.on('click.bg', function(event){
+  if (!event.target.closest('.node-g')) clearFocus();
+});
+
+// ═══════════════════════════════════════════════════════
+// DIMENSIONS
+// ═══════════════════════════════════════════════════════
+function updateDims(){
+  var c = document.getElementById('canvas');
+  W = c.clientWidth; H = c.clientHeight; CX = W/2; CY = H/2;
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTER HELPER
+// ═══════════════════════════════════════════════════════
+function nodePassesFilter(n){
+  if (filterState.status !== 'all' && n.status !== filterState.status) return false;
+  if (filterState.referred && !hasReferred[n.id]) return false;
+  if (filterState.repeat   && n.repeatBuyer !== 'Yes') return false;
+  if (filterState.multi    && n.multiRef !== 'Yes') return false;
+  if (filterState.hobby !== 'all'){
+    var h = HOBBY_MAP[n.id]||[];
+    if (h.indexOf(filterState.hobby) === -1) return false;
+  }
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+// GENERATION LAYOUT
+// ═══════════════════════════════════════════════════════
+function computeGenerationLayout(){
+  var visible = NODES_DATA.filter(nodePassesFilter)
+    .sort(function(a,b){
+      if (a.generation!==b.generation) return a.generation-b.generation;
+      return a.id.localeCompare(b.id);
+    });
+
+  var n = visible.length;
+  var maxR = Math.min(W,H)*0.40;
+  var R = Math.min(maxR, Math.max(70, n*13.5));
+
+  // Invisible nodes keep their current x,y as target so they fade in place
+  // rather than all rushing to the same center point and piling up visibly.
+  NODES_DATA.forEach(function(nd){
+    targetX[nd.id] = nd.x || CX;
+    targetY[nd.id] = nd.y || CY;
+    nodeVisible[nd.id] = false;
+  });
+  visible.forEach(function(nd, i){
+    var angle = -Math.PI/2 + (2*Math.PI*i/n);
+    targetX[nd.id] = CX + R*Math.cos(angle);
+    targetY[nd.id] = CY + R*Math.sin(angle);
+    nodeVisible[nd.id] = true;
   });
 
-  var nodes = rawNodes;
-  var width  = canvasEl.clientWidth;
-  var height = canvasEl.clientHeight;
+  updateCountBadge(visible.length);
+}
 
-  svgEl = d3.select('#svg');
-  gEl   = svgEl.append('g');
+// ═══════════════════════════════════════════════════════
+// CITY LAYOUT — well-spaced multiple circles
+// ═══════════════════════════════════════════════════════
+function computeCityLayout(){
+  var visible = NODES_DATA.filter(nodePassesFilter);
 
-  // Zoom
-  zoomBehavior = d3.zoom()
-    .scaleExtent([0.2, 4])
-    .on('zoom', function(e) { gEl.attr('transform', e.transform); });
-  svgEl.call(zoomBehavior);
+  // Group by city
+  var groups = {};
+  visible.forEach(function(n){
+    if (!groups[n.city]) groups[n.city] = [];
+    groups[n.city].push(n);
+  });
 
-  // Arrow marker
-  svgEl.append('defs').append('marker')
-    .attr('id', 'arr')
-    .attr('viewBox', '0 -4 8 8')
-    .attr('refX', 24).attr('refY', 0)
-    .attr('markerWidth', 5).attr('markerHeight', 5)
-    .attr('orient', 'auto')
-    .append('path')
-    .attr('d', 'M0,-4L8,0L0,4')
-    .attr('fill', '#1F3864')
-    .attr('fill-opacity', 0.5);
+  var cities = Object.keys(groups).sort(function(a,b){
+    return groups[b].length - groups[a].length;
+  });
 
-  // Draw links
-  var linkG = gEl.append('g');
-  linkSel = linkG.selectAll('line')
-    .data(links)
-    .enter().append('line')
-    .attr('class', function(d) { return 'link ' + (LINK_CLASS[d.type] || 'direct'); })
-    .attr('marker-end', function(d) {
-      return d.type === 'Direct Referral' ? 'url(#arr)' : null;
-    });
+  // Assign colours
+  cityColorMap = {};
+  cities.forEach(function(city, ci){
+    cityColorMap[city] = CITY_COLORS[ci % CITY_COLORS.length];
+  });
 
-  // Draw nodes
-  var nodeG = gEl.append('g');
-  nodeSel = nodeG.selectAll('.node')
-    .data(nodes)
-    .enter().append('g')
-    .attr('class', 'node')
-    .attr('id', function(d) { return 'node-' + d.id; })
-    .call(d3.drag()
-      .on('start', function(e, d) {
-        if (!e.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
-      })
-      .on('drag', function(e, d) { d.fx = e.x; d.fy = e.y; })
-      .on('end', function(e, d) {
-        if (!e.active) simulation.alphaTarget(0);
-        d.fx = null; d.fy = null;
-      }))
-    .on('mouseover', showTooltip)
-    .on('mousemove', moveTooltip)
-    .on('mouseout',  function() { document.getElementById('tooltip').style.opacity = 0; })
-    .on('click', function(e, d) {
-      e.stopPropagation();
-      if (focusedId === d.id) { resetFocus(); return; }
-      focusNode(d);
-    });
+  // Sub-circle radius — deliberately smaller so clusters have breathing room
+  var cityNodes = cities.map(function(city){
+    var cnt = groups[city].length;
+    var r = cnt === 1 ? 0 : Math.min(Math.max(28, cnt * 13), 110);
+    return {
+      id: city,
+      nodes: groups[city],
+      r: r,
+      // Generous collision radius — this is the key to spacing
+      collR: r + 80,
+      x: CX + (Math.random()-0.5)*W*0.55,
+      y: CY + (Math.random()-0.5)*H*0.55,
+      vx: 0, vy: 0
+    };
+  });
 
-  nodeSel.append('circle')
-    .attr('r', function(d) { return STATUS_RADIUS[d.status] || 10; })
-    .attr('fill', function(d) { return STATUS_COLOR[d.status] || '#888'; });
-
-  nodeSel.append('text')
-    .text(function(d) {
-      var r = STATUS_RADIUS[d.status] || 10;
-      return r >= 14 ? d.label : d.label.split(' ')[0];
-    })
-    .attr('dy', function(d) { return (STATUS_RADIUS[d.status] || 10) + 10; });
-
-  // Click background to reset
-  svgEl.on('click', resetFocus);
-
-  // Simulation
-  simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links)
-      .id(function(d) { return d.id; })
-      .distance(function(d) { return d.type === 'Direct Referral' ? 95 : 72; })
-      .strength(0.55))
-    .force('charge', d3.forceManyBody().strength(-300))
-    .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('collision', d3.forceCollide().radius(function(d) {
-      return (STATUS_RADIUS[d.status] || 10) + 10;
-    }))
-    .on('tick', function() {
-      linkSel
-        .attr('x1', function(d) { return d.source.x; })
-        .attr('y1', function(d) { return d.source.y; })
-        .attr('x2', function(d) { return d.target.x; })
-        .attr('y2', function(d) { return d.target.y; });
-      nodeSel.attr('transform', function(d) {
-        return 'translate(' + d.x + ',' + d.y + ')';
+  // ── Force sim for city circle placement ─────────────────
+  var csim = d3.forceSimulation(cityNodes)
+    // Very strong collision — primary spacing force
+    .force('collide', d3.forceCollide(function(d){ return d.collR; })
+      .strength(1.0).iterations(12))
+    // Strong charge repulsion so circles spread out
+    .force('charge', d3.forceManyBody().strength(-900).distanceMax(800))
+    // Gentle centre pull so they don't fly off canvas
+    .force('cx', d3.forceX(CX).strength(0.04))
+    .force('cy', d3.forceY(CY).strength(0.04))
+    // Custom bounding-box force — keep circles within canvas
+    .force('bounds', function(){
+      cityNodes.forEach(function(d){
+        var padX = d.collR + 20;
+        var padY = d.collR + 20;
+        if (d.x - padX < 0)     d.vx += (padX - d.x)     * 0.3;
+        if (d.x + padX > W)     d.vx += (W - padX - d.x) * 0.3;
+        if (d.y - padY < 0)     d.vy += (padY - d.y)     * 0.3;
+        if (d.y + padY > H)     d.vy += (H - padY - d.y) * 0.3;
       });
-    });
+    })
+    .stop();
 
-  // Auto-fit after simulation settles
-  setTimeout(function() {
-    var b = gEl.node().getBBox();
-    if (b.width === 0 || b.height === 0) return;
-    var scale = Math.min(0.85, 0.85 / Math.max(b.width / width, b.height / height));
-    var cx = b.x + b.width  / 2;
-    var cy = b.y + b.height / 2;
-    svgEl.transition().duration(900).call(
-      zoomBehavior.transform,
-      d3.zoomIdentity
-        .translate(width / 2, height / 2)
-        .scale(scale)
-        .translate(-cx, -cy)
-    );
-  }, 2500);
+  // Run synchronously — enough iterations for good separation
+  for (var i = 0; i < 700; i++) csim.tick();
 
-  // Resize
-  window.addEventListener('resize', function() {
-    width  = canvasEl.clientWidth;
-    height = canvasEl.clientHeight;
-    simulation.force('center', d3.forceCenter(width / 2, height / 2))
-      .alpha(0.1).restart();
+  // Hard-clamp to canvas after sim
+  cityNodes.forEach(function(d){
+    var pad = d.r + 55;
+    d.x = Math.max(pad, Math.min(W - pad, d.x));
+    d.y = Math.max(pad + 10, Math.min(H - pad, d.y));
+  });
+
+  // Store city data for ring drawing
+  cityData = cityNodes;
+
+  // Invisible nodes keep their current position — prevents center collapse
+  NODES_DATA.forEach(function(nd){
+    targetX[nd.id] = nd.x || CX;
+    targetY[nd.id] = nd.y || CY;
+    nodeVisible[nd.id] = false;
+  });
+
+  cityNodes.forEach(function(cd){
+    var nodes = cd.nodes;
+    if (nodes.length === 1){
+      targetX[nodes[0].id] = cd.x;
+      targetY[nodes[0].id] = cd.y;
+      nodeVisible[nodes[0].id] = true;
+    } else {
+      nodes.forEach(function(nd, i){
+        var angle = -Math.PI/2 + (2*Math.PI*i/nodes.length);
+        targetX[nd.id] = cd.x + cd.r * Math.cos(angle);
+        targetY[nd.id] = cd.y + cd.r * Math.sin(angle);
+        nodeVisible[nd.id] = true;
+      });
+    }
+  });
+
+  updateCountBadge(visible.length);
+}
+
+// ═══════════════════════════════════════════════════════
+// RESTART SIMULATION
+// ═══════════════════════════════════════════════════════
+function restartSim(alpha){
+  // Update spring targets
+  sim.force('tx').x(function(d){ return targetX[d.id] !== undefined ? targetX[d.id] : CX; });
+  sim.force('ty').y(function(d){ return targetY[d.id] !== undefined ? targetY[d.id] : CY; });
+  // Refresh repulsion so newly invisible nodes stop pushing visible ones
+  sim.force('repulse').strength(function(d){ return nodeVisible[d.id] ? -30 : 0; });
+  sim.alpha(alpha !== undefined ? alpha : 0.8).restart();
+  updateOpacity();
+}
+
+function applyLayout(alpha){
+  if (layoutMode === 'city'){
+    computeCityLayout();
+    drawCityRings();
+  } else {
+    computeGenerationLayout();
+    ringsG.selectAll('*').remove();
+    labelsG.selectAll('*').remove();
+    cityData = [];
+  }
+  restartSim(alpha);
+}
+
+// ═══════════════════════════════════════════════════════
+// OPACITY — D3 transition on node groups
+// ═══════════════════════════════════════════════════════
+function updateOpacity(){
+  nodesG.selectAll('.node-g').transition().duration(350)
+    .style('opacity', function(d){ return nodeVisible[d.id] ? 1 : 0; });
+}
+
+// ═══════════════════════════════════════════════════════
+// CITY RINGS + LABELS
+// ═══════════════════════════════════════════════════════
+function drawCityRings(){
+  ringsG.selectAll('*').remove();
+  labelsG.selectAll('*').remove();
+
+  cityData.forEach(function(cd){
+    var color = cityColorMap[cd.id] || '#4CAF50';
+
+    if (cd.r > 0){
+      ringsG.append('circle')
+        .attr('cx', cd.x).attr('cy', cd.y)
+        .attr('r', cd.r + 18)
+        .attr('fill','none')
+        .attr('stroke', color)
+        .attr('stroke-width', 1.5)
+        .attr('stroke-opacity', 0.3)
+        .attr('stroke-dasharray','5,4');
+    }
+
+    labelsG.append('text')
+      .attr('class','city-lbl')
+      .attr('x', cd.x)
+      .attr('y', cd.y - cd.r - 22)
+      .attr('text-anchor','middle')
+      .attr('fill', color)
+      .text(cd.id + ' (' + cd.nodes.length + ')');
   });
 }
 
-// ── Tooltip ───────────────────────────────────────────────────────────────
-function showTooltip(e, d) {
-  var badge = STATUS_BADGE[d.status] || '#888';
-  var tip = document.getElementById('tooltip');
-  tip.innerHTML =
-    '<div class="tt-name">' + d.label + '</div>' +
-    '<div class="tt-row"><span class="tt-key">Status</span>' +
-    '<span class="tt-val"><span class="tt-badge" style="background:' + badge + '">' + d.status + '</span></span></div>' +
-    '<div class="tt-row"><span class="tt-key">Priority</span><span class="tt-val">' + d.priority + '</span></div>' +
-    '<div class="tt-row"><span class="tt-key">Profession</span><span class="tt-val">' + d.profession + '</span></div>' +
-    '<div class="tt-row"><span class="tt-key">Location</span><span class="tt-val">' + d.city + ', ' + d.state + '</span></div>' +
-    '<div class="tt-row"><span class="tt-key">Repeat Buyer</span><span class="tt-val">' + d.repeatBuyer + '</span></div>' +
-    '<div class="tt-notes">' + d.notes + '</div>';
-  tip.style.opacity = 1;
-  moveTooltip(e);
+// ═══════════════════════════════════════════════════════
+// ARC PATH
+// ═══════════════════════════════════════════════════════
+function arcPath(sx,sy,tx,ty){
+  var mx=(sx+tx)/2, my=(sy+ty)/2;
+  var qx=mx+(CX-mx)*0.35, qy=my+(CY-my)*0.35;
+  return 'M'+sx+' '+sy+' Q'+qx+' '+qy+' '+tx+' '+ty;
 }
 
-function moveTooltip(e) {
-  var tip   = document.getElementById('tooltip');
-  var rect  = canvasEl.getBoundingClientRect();
-  var width = canvasEl.clientWidth;
-  var height= canvasEl.clientHeight;
-  var x = e.clientX - rect.left + 14;
-  var y = e.clientY - rect.top  + 14;
-  if (x + 250 > width)  x -= 265;
-  if (y + 210 > height) y -= 210;
-  tip.style.left = x + 'px';
-  tip.style.top  = y + 'px';
+// ═══════════════════════════════════════════════════════
+// TICK — update positions from sim
+// ═══════════════════════════════════════════════════════
+function onTick(){
+  // Update node transforms
+  nodesG.selectAll('.node-g')
+    .attr('transform', function(d){ return 'translate('+d.x+','+d.y+')'; });
+
+  // Update arc paths
+  arcsG.selectAll('.arc-path').each(function(){
+    var el = d3.select(this);
+    var src = el.attr('data-source'), tgt = el.attr('data-target');
+    var sn = nodeMap[src], tn = nodeMap[tgt];
+    if (!sn||!tn) return;
+    el.attr('d', arcPath(sn.x, sn.y, tn.x, tn.y));
+    if (!focusedId){
+      var vis = nodeVisible[src] && nodeVisible[tgt];
+      el.style('stroke-opacity', vis ? 0.18 : 0.03);
+    }
+  });
+
+  // Update label positions (generation: radial; city: static already drawn)
+  if (layoutMode==='generation'){
+    nodesG.selectAll('.node-g').each(function(d){
+      if (!d) return;
+      var dx = d.x - CX, dy = d.y - CY;
+      var dist = Math.sqrt(dx*dx+dy*dy)||1;
+      var r = STATUS_R[d.status]||10;
+      var lx = d.x + (r+11)*(dx/dist);
+      var ly = d.y + (r+11)*(dy/dist);
+      var anchor = dx>10?'start':dx<-10?'end':'middle';
+      d3.select(this).select('.node-label')
+        .attr('x', lx - d.x)
+        .attr('y', ly - d.y + 3)
+        .attr('text-anchor', anchor);
+    });
+  } else {
+    nodesG.selectAll('.node-g').each(function(d){
+      if (!d) return;
+      var city = cityData.find(function(c){ return c.id===d.city; });
+      if (!city) return;
+      var dx = d.x - city.x, dy = d.y - city.y;
+      var dist = Math.sqrt(dx*dx+dy*dy)||1;
+      var r = STATUS_R[d.status]||10;
+      var lx = (r+10)*(dx/dist);
+      var ly = (r+10)*(dy/dist);
+      var anchor = dx>5?'start':dx<-5?'end':'middle';
+      d3.select(this).select('.node-label')
+        .attr('x', lx).attr('y', ly+3)
+        .attr('text-anchor', anchor);
+    });
+  }
 }
 
-// ── Focus / highlight ─────────────────────────────────────────────────────
-function focusNode(d) {
-  focusedId = d.id;
+// ═══════════════════════════════════════════════════════
+// RENDER ARCS
+// ═══════════════════════════════════════════════════════
+function renderArcs(){
+  arcsG.selectAll('.arc-path')
+    .data(LINKS, function(d){ return d.source+'|'+d.target; })
+    .enter().append('path')
+    .attr('class','arc-path')
+    .attr('data-source', function(d){ return d.source; })
+    .attr('data-target', function(d){ return d.target; })
+    .attr('data-multi',  function(d){ return d.multiLink; })
+    .style('stroke', function(d){ return d.multiLink==='Yes'?'#F4B942':'#4a6a8a'; })
+    .style('stroke-width', function(d){ return d.multiLink==='Yes'?'1.8':'1.2'; })
+    .style('stroke-opacity', 0.18)
+    .style('fill','none');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER NODES
+// ═══════════════════════════════════════════════════════
+function renderNodes(){
+  var grps = nodesG.selectAll('.node-g')
+    .data(NODES_DATA, function(d){ return d.id; })
+    .enter().append('g')
+    .attr('class','node-g')
+    .style('opacity', 0)
+    .attr('transform', function(d){ return 'translate('+d.x+','+d.y+')'; });
+
+  // Circle
+  grps.append('circle')
+    .attr('r', function(d){ return STATUS_R[d.status]||10; })
+    .attr('fill', function(d){ return d.multiRef==='Yes'?'#9b59b6':STATUS_COLOR[d.status]||'#555'; })
+    .attr('stroke', function(d){ return d.crown==='Yes'?'#F4B942':d.directClient==='Yes'?'#888':'#fff'; })
+    .attr('stroke-width', function(d){ return d.crown==='Yes'?3:1.5; })
+    .attr('stroke-dasharray', function(d){ return d.directClient==='Yes'?'3,2':null; });
+
+  // Crown
+  grps.filter(function(d){ return d.crown==='Yes'; })
+    .append('text')
+    .attr('text-anchor','middle').attr('dominant-baseline','auto')
+    .attr('y', function(d){ return -(STATUS_R[d.status]||10)-8; })
+    .attr('font-size','13').text('👑');
+
+  // Multi diamond
+  grps.filter(function(d){ return d.multiRef==='Yes'&&d.crown==='No'; })
+    .append('polygon')
+    .attr('fill','#F4B942').attr('opacity',0.9)
+    .attr('points', function(d){
+      var r=(STATUS_R[d.status]||10), dr=5;
+      return '0,'+(-r-dr)+' '+dr+','+(-r)+' 0,'+(-r+dr)+' '+(-dr)+','+(-r);
+    });
+
+  // Label placeholder (position updated in onTick)
+  grps.append('text')
+    .attr('class','node-label')
+    .attr('dominant-baseline','central')
+    .text(function(d){ return d.label.split(' ')[0]; });
+
+  // Events
+  grps.on('mouseover', function(event, d){ showTip(event, d); })
+      .on('mousemove',  function(event){ moveTip(event); })
+      .on('mouseout',   function(){ hideTip(); })
+      .on('click', function(event, d){
+        event.stopPropagation();
+        if (focusedId===d.id){ clearFocus(); return; }
+        setFocus(d.id);
+      })
+      .call(d3.drag()
+        .on('start', function(event, d){
+          event.sourceEvent.stopPropagation();
+          d3.select(this).classed('dragging', true);
+          sim.alphaTarget(0.25).restart();
+          d.fx = d.x; d.fy = d.y;
+        })
+        .on('drag', function(event, d){
+          d.fx = event.x; d.fy = event.y;
+        })
+        .on('end', function(event, d){
+          d3.select(this).classed('dragging', false);
+          sim.alphaTarget(0);
+          // Release — let physics spring back to target
+          d.fx = null; d.fy = null;
+        })
+      );
+}
+
+// ═══════════════════════════════════════════════════════
+// FOCUS / UNFOCUS
+// ═══════════════════════════════════════════════════════
+function setFocus(id){
+  focusedId = id;
   var connected = {};
-  connected[d.id] = true;
-  if (linkSel) {
-    linkSel.each(function(l) {
-      var sid = l.source.id || l.source;
-      var tid = l.target.id || l.target;
-      if (sid === d.id) connected[tid] = true;
-      if (tid === d.id) connected[sid] = true;
-    });
-  }
-  if (nodeSel) {
-    nodeSel.classed('faded',       function(n) { return !connected[n.id]; });
-    nodeSel.classed('highlighted', function(n) { return n.id === d.id; });
-  }
-  if (linkSel) {
-    linkSel.classed('faded', function(l) {
-      var sid = l.source.id || l.source;
-      var tid = l.target.id || l.target;
-      return !(sid === d.id || tid === d.id);
-    });
-  }
+  connected[id] = true;
+  LINKS.forEach(function(l){
+    if (l.source===id) connected[l.target] = true;
+    if (l.target===id) connected[l.source] = true;
+  });
+
+  nodesG.selectAll('.node-g').each(function(d){
+    if (!d) return;
+    d3.select(this).style('opacity', connected[d.id] ? 1 : 0.07);
+  });
+
+  arcsG.selectAll('.arc-path').each(function(){
+    var el = d3.select(this);
+    var src = el.attr('data-source'), tgt = el.attr('data-target');
+    var isMulti = el.attr('data-multi')==='Yes';
+    if (src===id){
+      el.style('stroke', isMulti?'#F4B942':'#27ae60')
+        .style('stroke-opacity', 0.92).style('stroke-width', isMulti?'2.5':'2')
+        .attr('marker-end', isMulti?'url(#m-gold)':'url(#m-green)');
+    } else if (tgt===id){
+      el.style('stroke', isMulti?'#F4B942':'#e74c3c')
+        .style('stroke-opacity', 0.92).style('stroke-width', isMulti?'2.5':'2')
+        .attr('marker-end', isMulti?'url(#m-gold)':'url(#m-red)');
+    } else {
+      el.style('stroke','#4a6a8a').style('stroke-opacity',0.03)
+        .style('stroke-width','1').attr('marker-end',null);
+    }
+  });
 }
 
-function resetFocus() {
+function clearFocus(){
+  if (!focusedId) return;
   focusedId = null;
-  if (nodeSel) nodeSel.classed('faded', false).classed('highlighted', false);
-  if (linkSel) linkSel.classed('faded', false);
+  nodesG.selectAll('.node-g').each(function(d){
+    if (!d) return;
+    d3.select(this).style('opacity', nodeVisible[d.id]?1:0);
+  });
+  arcsG.selectAll('.arc-path').each(function(){
+    var el = d3.select(this);
+    var isMulti = el.attr('data-multi')==='Yes';
+    el.style('stroke', isMulti?'#F4B942':'#4a6a8a')
+      .style('stroke-opacity', 0.18)
+      .style('stroke-width', isMulti?'1.8':'1.2')
+      .attr('marker-end', null);
+  });
 }
 
-// ── Status filter ─────────────────────────────────────────────────────────
-function filterStatus(status, btn) {
-  document.querySelectorAll('.filter-btn').forEach(function(b) {
-    b.classList.remove('active');
-  });
-  if (btn) btn.classList.add('active');
-  if (!nodeSel) return;
-  nodeSel.classed('faded', function(d) {
-    return status !== 'all' && d.status !== status;
-  });
-  if (linkSel) {
-    linkSel.classed('faded', function(l) {
-      if (status === 'all') return false;
-      var sid = l.source.id || l.source;
-      var tid = l.target.id || l.target;
-      var sn = nodeMap[sid]; var tn = nodeMap[tid];
-      return !(sn && sn.status === status) && !(tn && tn.status === status);
-    });
+// ═══════════════════════════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════════════════════════
+var tipEl = document.getElementById('tooltip');
+function showTip(event, d){
+  var bg = STATUS_BADGE[d.status]||'#333';
+  var hobbies = (HOBBY_MAP[d.id]||[]).join(', ')||'—';
+  tipEl.innerHTML =
+    '<div class="tt-name">'+(d.crown==='Yes'?'👑 ':'')+d.label+'</div>'+
+    (d.multiRef==='Yes'?'<div class="tt-special">⭐ MULTI-REFERRED — High Value Signal</div>':'')+
+    (d.directClient==='Yes'?'<div class="tt-special" style="color:#aaa">● Direct Client Relationship</div>':'')+
+    '<div class="tt-row"><span class="tt-key">Status</span><span class="tt-val"><span class="tt-badge" style="background:'+bg+'">'+d.status+'</span></span></div>'+
+    '<div class="tt-row"><span class="tt-key">Priority</span><span class="tt-val">'+d.priority+'</span></div>'+
+    '<div class="tt-row"><span class="tt-key">Profession</span><span class="tt-val">'+d.profession+'</span></div>'+
+    '<div class="tt-row"><span class="tt-key">Location</span><span class="tt-val">'+d.city+', '+d.state+'</span></div>'+
+    '<div class="tt-row"><span class="tt-key">Repeat Buyer</span><span class="tt-val">'+d.repeatBuyer+'</span></div>'+
+    '<div class="tt-row"><span class="tt-key">Hobbies</span><span class="tt-val">'+hobbies+'</span></div>'+
+    '<div class="tt-notes">'+d.notes+'</div>';
+  tipEl.style.opacity = '1';
+  moveTip(event);
+}
+function moveTip(event){
+  var rect = document.getElementById('canvas').getBoundingClientRect();
+  var x = event.clientX-rect.left+14, y = event.clientY-rect.top+14;
+  if (x+250>W) x-=265;
+  if (y+240>H) y-=240;
+  tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+}
+function hideTip(){ tipEl.style.opacity='0'; }
+
+// ═══════════════════════════════════════════════════════
+// COUNT BADGE
+// ═══════════════════════════════════════════════════════
+function updateCountBadge(n){
+  document.getElementById('s-showing').textContent = n;
+  var el = document.getElementById('node-count');
+  if (n < NODES_DATA.length){
+    el.textContent = 'Showing '+n+' of '+NODES_DATA.length+' contacts';
+    el.style.opacity = '1';
+  } else {
+    el.style.opacity = '0';
   }
 }
 
-// ── Search ────────────────────────────────────────────────────────────────
-function searchNode(val) {
+// ═══════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════
+function filterStatus(status, btn){
+  filterState.status = status;
+  var ids = ['btn-all','btn-svip','btn-sact','btn-spro','btn-sin'];
+  var cls = ['active','a-vip','a-act','a-pros','a-inact'];
+  ids.forEach(function(id, i){ document.getElementById(id).classList.remove(cls[i],'active'); });
+  var map = {'all':'active','VIP Customer':'a-vip','Active Customer':'a-act','Prospect':'a-pros','Inactive':'a-inact'};
+  btn.classList.add(map[status]||'active');
+  clearFocus(); applyLayout(0.7);
+}
+
+function filterHobby(val){ filterState.hobby=val; clearFocus(); applyLayout(0.7); }
+
+function toggleFilter(key, btn){
+  filterState[key] = !filterState[key];
+  btn.classList.toggle('a-tog', filterState[key]);
+  clearFocus(); applyLayout(0.7);
+}
+
+function setLayout(mode, btn){
+  layoutMode = mode;
+  document.getElementById('btn-gen').classList.toggle('active', mode==='generation');
+  document.getElementById('btn-city').classList.toggle('a-city', mode==='city');
+  document.getElementById('btn-city').classList.toggle('active', mode==='city');
+  if (mode==='generation'){
+    ringsG.selectAll('*').remove();
+    labelsG.selectAll('*').remove();
+    cityData = [];
+  }
+  clearFocus(); applyLayout(0.85);
+}
+
+function searchNode(val){
   var q = val.trim().toLowerCase();
-  if (!q) { resetFocus(); return; }
-  var match = null;
-  for (var id in nodeMap) {
-    if (nodeMap[id].label.toLowerCase().indexOf(q) !== -1) {
-      match = nodeMap[id]; break;
+  if (!q){ clearFocus(); return; }
+  for (var i=0; i<NODES_DATA.length; i++){
+    if (NODES_DATA[i].label.toLowerCase().indexOf(q)!==-1){
+      clearFocus();
+      var id = NODES_DATA[i].id;
+      setTimeout(function(){ setFocus(id); }, 50);
+      return;
     }
   }
-  if (!match || !svgEl) return;
-  resetFocus();
-  var t = d3.zoomTransform(svgEl.node());
-  var w = canvasEl.clientWidth;
-  var h = canvasEl.clientHeight;
-  var scale = Math.max(t.k, 1.4);
-  var tx = w / 2 - scale * match.x;
-  var ty = h / 2 - scale * match.y;
-  svgEl.transition().duration(600).call(
-    zoomBehavior.transform,
-    d3.zoomIdentity.translate(tx, ty).scale(scale)
-  );
-  setTimeout(function() { focusNode(match); }, 650);
 }
 
-// ── Reset all ─────────────────────────────────────────────────────────────
-function resetAll() {
+function resetAll(){
   document.getElementById('search-box').value = '';
-  filterStatus('all', document.getElementById('btn-all'));
-  resetFocus();
-  if (svgEl && zoomBehavior) {
-    var w = canvasEl.clientWidth;
-    var h = canvasEl.clientHeight;
-    svgEl.transition().duration(500).call(
-      zoomBehavior.transform,
-      d3.zoomIdentity.translate(0, 0).scale(1)
-    );
-  }
+  document.getElementById('hobby-sel').value = 'all';
+  filterState = {status:'all', hobby:'all', referred:false, repeat:false, multi:false};
+  ['btn-ref','btn-rep','btn-mul'].forEach(function(id){
+    document.getElementById(id).classList.remove('a-tog','active');
+  });
+  ['btn-svip','btn-sact','btn-spro','btn-sin'].forEach(function(id){
+    document.getElementById(id).classList.remove('a-vip','a-act','a-pros','a-inact','active');
+  });
+  document.getElementById('btn-all').classList.add('active');
+  clearFocus();
+  layoutMode='generation';
+  document.getElementById('btn-gen').classList.add('active');
+  document.getElementById('btn-city').classList.remove('active','a-city');
+  ringsG.selectAll('*').remove(); labelsG.selectAll('*').remove(); cityData=[];
+  svgD3.transition().duration(500).call(zoomBehavior.transform, d3.zoomIdentity);
+  applyLayout(0.9);
 }
 
-// ── Start ─────────────────────────────────────────────────────────────────
-loadData();
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init(){
+  updateDims();
+
+  // Initialise targets to center
+  NODES_DATA.forEach(function(n){
+    targetX[n.id] = CX; targetY[n.id] = CY; nodeVisible[n.id] = true;
+    n.x = CX + (Math.random()-0.5)*60;
+    n.y = CY + (Math.random()-0.5)*60;
+  });
+
+  loadFromSheet(); return;
+
+  // Start with generation layout after a brief delay
+  setTimeout(function(){ applyLayout(1.0); }, 80);
+}
+
+window.addEventListener('resize', function(){ updateDims(); applyLayout(0.5); });
+init();
 </script>
 </body>
 </html>
